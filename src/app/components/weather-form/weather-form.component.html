@@ -1,0 +1,88 @@
+<mat-card>
+    <form #weatherSearchForm="ngForm" class="weather-form">
+      <mat-form-field class="control-80-width" appearance="fill">
+        <mat-label>Get Weather for your City</mat-label>
+        <input matInput 
+              placeholder="Eg. London" 
+              required
+              maxlength="200"
+              name="city" 
+              [(ngModel)]="city" 
+              #cityControl="ngModel">
+      </mat-form-field>  
+      <button  mat-button color="primary" [disabled]="weatherSearchForm.invalid" (click)="onInputSubmit()" >Submit</button>
+      <ng-container *ngIf="cityControl.invalid && cityControl.touched">
+        <div *ngIf="cityControl.errors?.required">
+          You must enter an city name.
+        </div>
+      </ng-container>
+    </form>
+  </mat-card>
+  
+  <div *ngIf="currentWeather.Name">
+    <mat-card>
+      <mat-card-title>Weather Information for {{currentWeather.Name}}</mat-card-title>
+    </mat-card>
+    <mat-tab-group mat-align-tabs="center" (selectedTabChange)="onTabClick($event)">
+      <mat-tab label="CURRENT">
+        <table>
+          <tbody>
+                <tr>
+                  <td><h4>Current Temperature</h4></td>
+                  <td>{{currentWeather.Main?.Temp | number: '1.0-0' }}</td>
+                </tr>
+                <tr>
+                  <td><h4>Pressure</h4></td>
+                  <td>{{currentWeather.Main?.Pressure }} mb</td>
+                </tr>
+                <tr>
+                  <td><h4>Humidity</h4></td>
+                  <td>{{currentWeather.Main?.Humidity }} %</td>
+                </tr>
+          </tbody>
+        </table>
+      </mat-tab>
+      <mat-tab label="1 HOUR">
+        <div *ngIf="minutely.Minutely?.length>0">
+          <ul>
+            <li *ngFor="let min of minutely.Minutely; let i = index">
+              {{ min.Dt * 1000 | date: 'MMM dd,y, h:mm:ss a' }}  - {{ min.Precipitation }}
+            </li>
+          </ul>
+        </div>
+      </mat-tab>
+      <mat-tab label="2 DAY">
+        <div *ngIf="hourly.Hourly?.length>0">
+          <table>
+            <tbody>
+              <tr *ngFor="let h of hourly.Hourly; let i = index">
+                <td>DateTime: </td>
+                <td>{{h.Dt * 1000 | date: 'MMM dd, y, h:mm:ss a'}}</td>
+                <td>Temperature</td>
+                <td>{{h.Temp}}</td>
+                <td>Pressure</td>
+                <td>{{h.Pressure}} mb</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </mat-tab>
+      <mat-tab label="7 DAY">
+        <div *ngIf="daily.Daily?.length>0">
+          <table>
+            <tbody>
+              <tr *ngFor="let d of daily.Daily; let i = index">
+                <td>DateTime: </td>
+                <td>{{d.Dt * 1000 | date: 'MMM dd, y' }}</td>
+                <td>Temperature</td>
+                <td>{{d.Temp | number: '1.0-0'}}</td>
+                <td>Pressure</td>
+                <td>{{d.Pressure}} mb</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+  
